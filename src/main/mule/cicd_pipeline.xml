@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="bd77e890-ab7f-4892-bb1f-126068789976" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="b9d11edf-7f72-46ea-94ab-8498a0a2dce4" file="config.yaml" />
+	<flow name="cicd_pipelineFlow" doc:id="7fbe39e9-6897-4e9a-9b0a-88a7db934771" >
+		<http:listener doc:name="Listener" doc:id="1ee7f288-bc46-409f-ba08-46cc92ebf0dd" config-ref="HTTP_Listener_config" path="/jenkins"/>
+		<set-payload value='"Pipeline created."' doc:name="Set Payload" doc:id="8ea5bdc4-c535-45e5-9dec-95387b7858a2" />
+		<logger level="INFO" doc:name="Logger" doc:id="b719b48f-4add-4ffc-9b2b-cc38a1b09a12" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5d9b4ec9-5b3c-4f8b-a7fd-cecadd4d99de" type="ANY">
+				<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="32c9227d-eec5-4a4e-8f5d-efe73a2c298e" />
+				<logger level="INFO" doc:name="Logger" doc:id="82d8cdc7-1e12-417c-8ef7-ce9c0d481491" message="#[payload]"/>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
